@@ -7,7 +7,7 @@
 <div>
 
 	<h3><a href="./title.md">Title and Copyright Information</a></h3>
-	<h3><a href="preface.html#gct_preface">Preface</a></h3>
+	<h3><a href="./00_Preface/README.md#gct_preface">前言</a></h3>
 	<ul style="list-style-type:none">
 		<li>
 			<a href="preface.html#gct_audience">Audience</a>
