@@ -6,7 +6,7 @@
 
 <div>
 
-	<h3><a href="title.html">Title and Copyright Information</a></h3>
+	<h3><a href="./title.md">Title and Copyright Information</a></h3>
 	<h3><a href="preface.html#gct_preface">Preface</a></h3>
 	<ul style="list-style-type:none">
 		<li>
