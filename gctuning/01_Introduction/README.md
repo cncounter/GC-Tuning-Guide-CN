@@ -3,17 +3,78 @@
 
 # 1 简介
 
-A wide variety of applications use Java Platform, Standard Edition (Java SE), from small applets on desktops to web services on large servers. In support of this diverse range of deployments, the Java HotSpot virtual machine implementation (Java HotSpot VM) provides multiple garbage collectors, each designed to satisfy different requirements. This is an important part of meeting the demands of both large and small applications. Java SE selects the most appropriate garbage collector based on the class of the computer on which the application is run. However, this selection may not be optimal for every application. Users, developers, and administrators with strict performance goals or other requirements may need to explicitly select the garbage collector and tune certain parameters to achieve the desired level of performance. This document provides information to help with these tasks. First, general features of a garbage collector and basic tuning options are described in the context of the serial, stop-the-world collector. Then specific features of the other collectors are presented along with factors to consider when selecting a collector.
+Java 平台应用得非常广泛, 例如个人电脑上运行的小小的 applet, 或者是大型服务器上部署的 WEB 服务。
+
+A wide variety of applications use Java Platform, Standard Edition (Java SE), from small applets on desktops to web services on large servers. 
+
+为了支持各种不同类型的部署环境, Java 虚拟机(Java HotSpot VM) 提供了很多种类的垃圾收集器。每一种都是为某种特定需求而设计的。
+
+In support of this diverse range of deployments, the Java HotSpot virtual machine implementation (Java HotSpot VM) provides multiple garbage collectors, each designed to satisfy different requirements. 
+
+这也是适应各种规模应用程序而实现的一个重要部分。
+
+This is an important part of meeting the demands of both large and small applications. 
+
+Java SE 会根据运行平台而选择默认最优的垃圾收集器。
+
+Java SE selects the most appropriate garbage collector based on the class of the computer on which the application is run. 
+
+但是这种普适性选择并不是对每个程序都是最优解。
+
+However, this selection may not be optimal for every application. 
+
+对于性能要求极高或者极端苛刻的用户，开发人员，记忆系统管理员就需要明确地指定使用哪款垃圾收集器，并对配置参数进行合理的优化。
+
+Users, developers, and administrators with strict performance goals or other requirements may need to explicitly select the garbage collector and tune certain parameters to achieve the desired level of performance.
+
+本文的主要是为这些调优任务提供帮助信息。
+
+This document provides information to help with these tasks. 
+
+首先， 在串行垃圾收集器章节中会介绍垃圾收集器的一般特性，以及基本的调优选项。
+
+First, general features of a garbage collector and basic tuning options are described in the context of the serial, stop-the-world collector. 
+
+然后会介绍选择垃圾收集器时应该考虑哪些因素。
+
+Then specific features of the other collectors are presented along with factors to consider when selecting a collector.
+
+垃圾收集器(GC, garbage collector)就是一种内存管理工具。
+
+通过以下这些步骤来实现自动内存管理。
 
 A garbage collector (GC) is a memory management tool. It achieves automatic memory management through the following operations:
 
+- 在年轻代分配对象，并将存活一定时间的对象迁移到老年代之中去。
+
 - Allocating objects to a young generation and promoting aged objects into an old generation.
+
+- 在老年代中在并发/并行标记阶段找出所有存活的对象。 HotSpot 虚拟机在内存占用达到一定比例时就会触发标记阶段的执行。详情请参考 [Concurrent Mark Sweep (CMS) Collector](../08_CMS_Collector/) 和 [Garbage-First Garbage Collector](../09_G1_Garbage_Collector/) 章节.
 
 - Finding live objects in the old generation through a concurrent (parallel) marking phase. The Java HotSpot VM triggers the marking phase when the total Java heap occupancy exceeds the default threshold. See the sections [Concurrent Mark Sweep (CMS) Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/cms.html#concurrent_mark_sweep_cms_collector) and [Garbage-First Garbage Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc.html#garbage_first_garbage_collection).
 
+- 通过并行拷贝来压缩对象存储空间并释放内存, 详情请参考 [Parallel Collector](../06_The_Parallel_Collector/) 和 [Garbage-First Garbage Collector](../09_G1_Garbage_Collector/) 章节.
+
 - Recovering free memory by compacting live objects through parallel copying. See the sections The [Parallel Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#CHDCFBIF) and [Garbage-First Garbage Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/g1_gc.html#garbage_first_garbage_collection)
 
-When does the choice of a garbage collector matter? For some applications, the answer is never. That is, the application can perform well in the presence of garbage collection with pauses of modest frequency and duration. However, this is not the case for a large class of applications, particularly those with large amounts of data (multiple gigabytes), many threads, and high transaction rates.
+
+选择一款合适的垃圾收集器有多重要?
+
+When does the choice of a garbage collector matter?
+
+对于某些程序来说，什么用也没有。
+
+For some applications, the answer is never. 
+
+也就是说，垃圾收集所占用的时间和产生的程序暂停对他们来说基本上没什么影响。
+
+That is, the application can perform well in the presence of garbage collection with pauses of modest frequency and duration. 
+
+但对于复杂一点的程序来说就不一样了， 比如说大数据处理，多线程应用，或者是及时响应的事务处理程序。
+
+However, this is not the case for a large class of applications, particularly those with large amounts of data (multiple gigabytes), many threads, and high transaction rates.
+
+阿姆达尔定律...
 
 Amdahl's law (parallel speedup in a given problem is limited by the sequential portion of the problem) implies that most workloads cannot be perfectly parallelized; some portion is always sequential and does not benefit from parallelism. This is also true for the Java platform. In particular, virtual machines from Oracle for the Java platform prior to Java SE 1.4 do not support parallel garbage collection, so the effect of garbage collection on a multiprocessor system grows relative to an otherwise parallel application.
 
