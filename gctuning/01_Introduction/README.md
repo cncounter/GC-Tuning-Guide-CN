@@ -27,7 +27,7 @@ However, this selection may not be optimal for every application.
 
 Users, developers, and administrators with strict performance goals or other requirements may need to explicitly select the garbage collector and tune certain parameters to achieve the desired level of performance.
 
-本文的主要是为这些调优任务提供帮助信息。
+本文的主要目的是为这些调优任务提供帮助信息。
 
 This document provides information to help with these tasks. 
 
@@ -66,7 +66,7 @@ When does the choice of a garbage collector matter?
 
 For some applications, the answer is never. 
 
-也就是说，垃圾收集所占用的时间和产生的程序暂停对他们来说基本上没什么影响。
+也就是说，垃圾收集所占用的时间和产生的停顿对他们来说基本上没什么影响。
 
 That is, the application can perform well in the presence of garbage collection with pauses of modest frequency and duration. 
 
@@ -80,18 +80,64 @@ Amdahl's law (parallel speedup in a given problem is limited by the sequential p
 
 The graph in [Figure 1-1, "Comparing Percentage of Time Spent in Garbage Collection"](#Figure1-1) models an ideal system that is perfectly scalable with the exception of garbage collection (GC). The red line is an application spending only 1% of the time in garbage collection on a uniprocessor system. This translates to more than a 20% loss in throughput on systems with 32 processors. The magenta line shows that for an application at 10% of the time in garbage collection (not considered an outrageous amount of time in garbage collection in uniprocessor applications), more than 75% of throughput is lost when scaling up to 32 processors.
 
+
+**<a name="Figure1-1"> </a>图 1-1 对比垃圾回收占用时间的百分比**
+
 **<a name="Figure1-1"> </a>Figure 1-1 Comparing Percentage of Time Spent in Garbage Collection**
 
 ![](./gc_spent.png)
 
 
+关于 [图 1-1 的详细说明请点击这里](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/img_text/jsgct_dt_005_gph_pc_vs_tp.html)
+
+
 [Description of "Figure 1-1 Comparing Percentage of Time Spent in Garbage Collection"](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/img_text/jsgct_dt_005_gph_pc_vs_tp.html)
 
-This shows that negligible speed issues when developing on small systems may become principal bottlenecks when scaling up to large systems. However, small improvements in reducing such a bottleneck can produce large gains in performance. For a sufficiently large system, it becomes worthwhile to select the right garbage collector and to tune it if necessary.
 
-The serial collector is usually adequate for most "small" applications (those requiring heaps of up to approximately 100 megabytes (MB (on modern processors). The other collectors have additional overhead or complexity, which is the price for specialized behavior. If the application does not need the specialized behavior of an alternate collector, use the serial collector. One situation where the serial collector is not expected to be the best choice is a large, heavily threaded application that runs on a machine with a large amount of memory and two or more processors. When applications are run on such server-class machines, the parallel collector is selected by default. See the section [Ergonomics](../02_Ergonomics/).
+这个图说明的是,在小型系统上开发的程序，也许只是微不足道的速度问题，当扩大到大型系统时可能会成为主要的性能瓶颈。
 
-This document was developed using Java SE 8 on the Solaris operating system (SPARC Platform Edition) as the reference. However, the concepts and recommendations presented here apply to all supported platforms, including Linux, Microsoft Windows, the Solaris operating system (x64 Platform Edition), and OS X. In addition, the command line options mentioned are available on all supported platforms, although the default values of some options may be different on each platform.
+This shows that negligible speed issues when developing on small systems may become principal bottlenecks when scaling up to large systems. 
+
+但也许只需要小小的改进就能减少这样的瓶颈，在性能上获得巨大的收益。在足够大的系统上, 选择合适的垃圾收集器,并做必要的调优将会变得非常必要。
+
+However, small improvements in reducing such a bottleneck can produce large gains in performance. For a sufficiently large system, it becomes worthwhile to select the right garbage collector and to tune it if necessary.
+
+
+串行收集器通常来说足以应付那些 “小” 程序(只需要不到100MB内存空间)。
+
+The serial collector is usually adequate for most "small" applications (those requiring heaps of up to approximately 100 megabytes (MB (on modern processors). 
+
+其他的垃圾收集器都会有额外的开销或复杂性, 这就是专业行为的代价。
+
+The other collectors have additional overhead or complexity, which is the price for specialized behavior.
+
+如果应用程序不需要这些垃圾收集器的专业行为,建议使用串行收集器。
+
+If the application does not need the specialized behavior of an alternate collector, use the serial collector. 
+
+串行收集器不太适合用来处理运行在多核CPU上的大型应用程序, 特别是有大量线程，占用很多内存的那些应用。
+
+One situation where the serial collector is not expected to be the best choice is a large, heavily threaded application that runs on a machine with a large amount of memory and two or more processors. 
+
+当程序在服务器级别的机器上执行时, 默认会使用并行垃圾收集器。
+
+When applications are run on such server-class machines, the parallel collector is selected by default.
+
+详情请参考  [Ergonomics](../02_Ergonomics/) 章节.
+
+See the section [Ergonomics](../02_Ergonomics/).
+
+本文档最初是基于Java SE 8编写的，系统平台是 SPARC - Solaris。
+
+This document was developed using Java SE 8 on the Solaris operating system (SPARC Platform Edition) as the reference. 
+
+但相关的概念和建议适用于所有平台, 包括 Linux， Windows，X64版本的Solaris，以及 OS X。
+
+However, the concepts and recommendations presented here apply to all supported platforms, including Linux, Microsoft Windows, the Solaris operating system (x64 Platform Edition), and OS X.
+
+另外， 所使用的命令行参数/选型也适用于所有平台，当然，某些平台上这些参数的默认值会不一样。
+
+In addition, the command line options mentioned are available on all supported platforms, although the default values of some options may be different on each platform.
 
 
 
