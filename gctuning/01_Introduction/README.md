@@ -74,14 +74,18 @@ That is, the application can perform well in the presence of garbage collection 
 
 However, this is not the case for a large class of applications, particularly those with large amounts of data (multiple gigabytes), many threads, and high transaction rates.
 
-阿姆达尔定律...
+
+Amdahl 定律(并行所能提升的速度在具体情况下受串行执行部分的限制) 指明了大部分情况下并不能完全进行完全的并行化, 总有一部分代码是串行执行的,不能从并行化中受益。 这同样适用于Java平台。特别是,Java 1.4 之前的虚拟机不支持并行垃圾回收, 所以在多处理器系统上的垃圾收集也和另一个并行程序关联密切。
+
 
 Amdahl's law (parallel speedup in a given problem is limited by the sequential portion of the problem) implies that most workloads cannot be perfectly parallelized; some portion is always sequential and does not benefit from parallelism. This is also true for the Java platform. In particular, virtual machines from Oracle for the Java platform prior to Java SE 1.4 do not support parallel garbage collection, so the effect of garbage collection on a multiprocessor system grows relative to an otherwise parallel application.
+
+图 1-1 是一种理想化系统模型。除 GC 之外的代码部分都能完美地进行并行化。 最上面的红线指的是在单核系统上,垃圾回收只占用了 1% 的运行时间。 但是在CPU扩展到32核以后,就会有超过 20% 的性能损失。 中间品红色的线表示只要有 10% 的时间花在垃圾收集上面，那么扩展到32核以后，系统的吞吐量就会下降75%以上(还不去考虑在单核处理器程序上所花费的垃圾收集时间)。
 
 The graph in [Figure 1-1, "Comparing Percentage of Time Spent in Garbage Collection"](#Figure1-1) models an ideal system that is perfectly scalable with the exception of garbage collection (GC). The red line is an application spending only 1% of the time in garbage collection on a uniprocessor system. This translates to more than a 20% loss in throughput on systems with 32 processors. The magenta line shows that for an application at 10% of the time in garbage collection (not considered an outrageous amount of time in garbage collection in uniprocessor applications), more than 75% of throughput is lost when scaling up to 32 processors.
 
 
-**<a name="Figure1-1"> </a>图 1-1 对比垃圾回收占用时间的百分比**
+**<a name="Figure1-1"> </a>图 1-1 垃圾回收的时间占比在处理器数量增大后对吞吐量的影响**
 
 **<a name="Figure1-1"> </a>Figure 1-1 Comparing Percentage of Time Spent in Garbage Collection**
 
