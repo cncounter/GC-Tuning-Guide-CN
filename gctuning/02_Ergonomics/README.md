@@ -2,34 +2,64 @@
 英文版来自于官方文档, 详情请参考下方的 [相关链接](#referlink)
 
 
-# 2 工程学相关知识(Ergonomics)
+# 2 工程学(Ergonomics)
+
+工程学 是对Java虚拟机(JVM)和垃圾收集调优的过程, 比如基于行为的优化,提高应用程序的性能等等。JVM对垃圾收集器，堆内存大小与运行时编译器 根据平台的不同提供了不同的默认选择。这些默认选择根据不同类型的应用程序需要而减少需要使用的命令行参数。此外,基于行为的动态优化堆内存的大小,以适应不同应用程序的需求。
 
 
 Ergonomics is the process by which the Java Virtual Machine (JVM) and garbage collection tuning, such as behavior-based tuning, improve application performance. The JVM provides platform-dependent default selections for the garbage collector, heap size, and runtime compiler. These selections match the needs of different types of applications while requiring less command-line tuning. In addition, behavior-based tuning dynamically tunes the sizes of the heap to meet a specified behavior of the application.
 
+
+本节介绍这些默认选择和基于行为的调优。在随后章节介绍更详细的控制选项之前, 我们先使用这些默认值。
+
+
 This section describes these default selections and behavior-based tuning. Use these defaults first before using the more detailed controls described in subsequent sections.
+
+## 默认的垃圾收集器, 堆内存大小与运行时编译器
 
 ## Garbage Collector, Heap, and Runtime Compiler Default Selections
 
+在JDK看来, 服务器级(server-class) 的机器具有如下配置:
+
 A class of machine referred to as a server-class machine has been defined as a machine with the following:
+
+- 2个及以上的物理处理器
 
 - 2 or more physical processors
 
+- 2GB 及以上的物理内存
+
 - 2 or more GB of physical memory
+
+在服务器上,默认选项包括: 
 
 On server-class machines, the following are selected by default:
 
+- 吞吐量高的垃圾收集器
+
 - Throughput garbage collector
+
+- 初始化堆内存为物理内存的 1/64, 最高为 1GB(默认值)
 
 - Initial heap size of 1/64 of physical memory up to 1 GB
 
+- 最大堆内存为物理内存的 1/64, 最多 1GB(默认值)
+
 - Maximum heap size of 1/4 of physical memory up to 1 GB
+
+- 服务器运行时编译器
 
 - Server runtime compiler
 
+关于64位系统的初始化堆内存和堆内存限制,请参考 [第6章 并行垃圾收集器 中的 默认堆内存 ](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#default_heap_size)
+
 For initial heap and maximum heap sizes for 64-bit systems, see the section [Default Heap](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#default_heap_size) Size in [The Parallel Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#CHDCFBIF).
 
+**服务器级**的默认设置，除32位 Windows 系统外都适用。[表 2-1, "默认运行时编译器"](#BABIIFHA) 显示了在各个系统版本上的默认值.
+
 The definition of a server-class machine applies to all platforms with the exception of 32-bit platforms running a version of the Windows operating system. [Table 2-1, "Default Runtime Compiler"](#BABIIFHA), shows the choices made for the runtime compiler for different platforms.
+
+> ### <a name="BABIIFHA">表 2-1 默认运行时编译器</a>
 
 > ### <a name="BABIIFHA">Table 2-1 Default Runtime Compiler</a>
 
@@ -51,7 +81,7 @@ The definition of a server-class machine applies to all platforms with the excep
 		<tr align="left" valign="top">
 			<td align="left" headers="r1c1-t2" id="r2c1-t2">
 			<p>
-				i586
+				i586(即32-bit)
 			</p></td>
 			<td align="left" headers="r2c1-t2 r1c2-t2">
 			<p>
@@ -69,7 +99,7 @@ The definition of a server-class machine applies to all platforms with the excep
 		<tr align="left" valign="top">
 			<td align="left" headers="r1c1-t2" id="r3c1-t2">
 			<p>
-				i586
+				i586(即32-bit)
 			</p></td>
 			<td align="left" headers="r3c1-t2 r1c2-t2">
 			<p>
