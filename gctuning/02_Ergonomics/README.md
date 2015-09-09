@@ -71,10 +71,10 @@ The definition of a server-class machine applies to all platforms with the excep
 	<col width="25%"/>
 	<thead>
 		<tr align="left" valign="top">
-			<th align="left" id="r1c1-t2" valign="bottom">Platform</th>
-			<th align="left" id="r1c2-t2" valign="bottom">Operating System</th>
-			<th align="left" id="r1c3-t2" valign="bottom">Default<a href="#BABFAAII" id="BABFAAII" name="BABFAAII" onclick="footdisplay(1,&quot;Client means the client runtime compiler is used. Server means the server runtime compiler is used. &quot;)"><sup>Foot1</sup></a></th>
-			<th align="left" id="r1c4-t2" valign="bottom">Default if Server-Class<a href="#sthref7" id="sthref7" name="sthref7" onclick="footdisplay(1,&quot;Client means the client runtime compiler is used. Server means the server runtime compiler is used. &quot;)"><sup>Footref1</sup></a></th>
+			<th align="left" id="r1c1-t2" valign="bottom">体系架构</th>
+			<th align="left" id="r1c2-t2" valign="bottom">操作系统</th>
+			<th align="left" id="r1c3-t2" valign="bottom">默认值<a href="#BABFAAII" id="BABFAAII" name="BABFAAII" onclick="footdisplay(1,&quot;Client means the client runtime compiler is used. Server means the server runtime compiler is used. &quot;)"><sup>Foot1</sup></a></th>
+			<th align="left" id="r1c4-t2" valign="bottom">服务器级默认值<a href="#sthref7" id="sthref7" name="sthref7" onclick="footdisplay(1,&quot;Client means the client runtime compiler is used. Server means the server runtime compiler is used. &quot;)"><sup>Footref1</sup></a></th>
 		</tr>
 	</thead>
 	<tbody>
