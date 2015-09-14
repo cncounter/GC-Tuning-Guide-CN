@@ -61,7 +61,6 @@ The definition of a server-class machine applies to all platforms with the excep
 
 > ### <a name="BABIIFHA">表 2-1 默认运行时编译器</a>
 
-> ### <a name="BABIIFHA">Table 2-1 Default Runtime Compiler</a>
 
 
 <table border="1" cellpadding="3" cellspacing="0" dir="ltr" frame="border" rules="all" summary="Default runtime compiler" title="Default Runtime Compiler" width="100%">
@@ -172,30 +171,35 @@ The definition of a server-class machine applies to all platforms with the excep
 </table>
 
 
->Footnote1: Client means the client runtime compiler is used. Server means the server runtime compiler is used.
+>Footnote1: Client 模式的意思是使用 client runtime compiler. Server 模式的意思是使用 server runtime compiler.
 
->Footnote2: The policy was chosen to use the client runtime compiler even on a server class machine. This choice was made because historically client applications (for example, interactive applications) were run more often on this combination of platform and operating system.
+>Footnote2: 即便在服务器级别的机器上, Win32系统的默认选择仍然是 client runtime compiler . 这是因为要兼容以前的应用系统(例如, 交互式应用程序), 而且在 win32 系统上的程序大多是这一类的.
 
->Footnote3: Only the server runtime compiler is supported.
+>Footnote3: SPARC 平台只支持 server runtime compiler.
 
 
-## Behavior-Based Tuning
+## 基于行为的调整( Behavior-Based Tuning)
+
+对于并行收集器,Java SE提供了两个针对特定应用行为的调优参数:  **最大停顿时间指标** 和 吞**吐量指标**; 详情请参考 [The Parallel Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#CHDCFBIF) 章节。(这两个选项在其他垃圾收集器上不可用.) 注意, 这些行为并不能一定会得到满足。原因在于程序需要一个足够大的堆来存放所有实时数据。此外, 最小堆内存参数的设置也可能会阻止达成这些期望的目标。
+
 
 For the parallel collector, Java SE provides two garbage collection tuning parameters that are based on achieving a specified behavior of the application: maximum pause time goal and application throughput goal; see the section [The Parallel Collector](http://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#CHDCFBIF). (These two options are not available in the other collectors.) Note that these behaviors cannot always be met. The application requires a heap large enough to at least hold all of the live data. In addition, a minimum heap size may preclude reaching these desired goals.
 
-### Maximum Pause Time Goal
+### 最大停顿时间指标(Maximum Pause Time Goal)
 
 The pause time is the duration during which the garbage collector stops the application and recovers space that is no longer in use. The intent of the maximum pause time goal is to limit the longest of these pauses. An average time for pauses and a variance on that average is maintained by the garbage collector. The average is taken from the start of the execution but is weighted so that more recent pauses count more heavily. If the average plus the variance of the pause times is greater than the maximum pause time goal, then the garbage collector considers that the goal is not being met.
 
 The maximum pause time goal is specified with the command-line option -XX:MaxGCPauseMillis=<nnn>. This is interpreted as a hint to the garbage collector that pause times of <nnn> milliseconds or less are desired. The garbage collector will adjust the Java heap size and other parameters related to garbage collection in an attempt to keep garbage collection pauses shorter than <nnn> milliseconds. By default there is no maximum pause time goal. These adjustments may cause garbage collector to occur more frequently, reducing the overall throughput of the application. The garbage collector tries to meet any pause time goal before the throughput goal. In some cases, though, the desired pause time goal cannot be met.
 
-### Throughput Goal
+### 吞吐量指标(Throughput Goal)
 
 The throughput goal is measured in terms of the time spent collecting garbage and the time spent outside of garbage collection (referred to as application time). The goal is specified by the command-line option -XX:GCTimeRatio=<nnn>. The ratio of garbage collection time to application time is 1 / (1 + <nnn>). For example, -XX:GCTimeRatio=19 sets a goal of 1/20th or 5% of the total time for garbage collection.
 
 The time spent in garbage collection is the total time for both the young generation and old generation collections combined. If the throughput goal is not being met, then the sizes of the generations are increased in an effort to increase the time that the application can run between collections.
 
-### Footprint Goal
+### 记录指标(Footprint Goal)
+
+如果满足了吞吐量指标和最大停顿时间指标，那么垃圾收集器会减小堆内存，直到其中的一个指标不能满足为止(其实只会是吞吐量指标)。不能满足的这个临界点将会被记录下来。
 
 If the throughput and maximum pause time goals have been met, then the garbage collector reduces the size of the heap until one of the goals (invariably the throughput goal) cannot be met. The goal that is not being met is then addressed.
 
