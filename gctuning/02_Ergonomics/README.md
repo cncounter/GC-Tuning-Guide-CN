@@ -203,10 +203,18 @@ The time spent in garbage collection is the total time for both the young genera
 
 If the throughput and maximum pause time goals have been met, then the garbage collector reduces the size of the heap until one of the goals (invariably the throughput goal) cannot be met. The goal that is not being met is then addressed.
 
-## Tuning Strategy
+## 调优策略(Tuning Strategy)
+
+除非程序需要的内存要用超过默认的最大设置，否则不需要设置最大值。设置吞吐量指标一般来说是更好的选择。
+
 Do not choose a maximum value for the heap unless you know that you need a heap greater than the default maximum heap size. Choose a throughput goal that is sufficient for your application.
 
+堆内存将增大或缩小,以适应选择的吞吐量目指标。应用程序行为的改变将会导致堆的增大或减小。例如, 如果应用程序开始以更高的频率分配内存, 那么堆会增长以保持同样的吞吐量。
+
+
 The heap will grow or shrink to a size that will support the chosen throughput goal. A change in the application's behavior can cause the heap to grow or shrink. For example, if the application starts allocating at a higher rate, the heap will grow to maintain the same throughput.
+
+
 
 If the heap grows to its maximum size and the throughput goal is not being met, the maximum heap size is too small for the throughput goal. Set the maximum heap size to a value that is close to the total physical memory on the platform but which does not cause swapping of the application. Execute the application again. If the throughput goal is still not met, then the goal for the application time is too high for the available memory on the platform.
 
